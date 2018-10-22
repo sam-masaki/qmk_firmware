@@ -32,7 +32,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 	KC_LSFT, ___E___, KC_Z,    KC_X,    KC_C,    KC_V,    KC_J,    KC_K,    KC_P,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSFT, DZ_CYCL,
 
-	KC_LCTL, KC_LGUI, KC_LALT, KC_SPC,           MO(L_TH),         KC_DEL,                    KC_RALT, MO(L_FN),___E___, MO(L_RG),KC_RCTL),
+	KC_LCTL, KC_LALT, KC_LGUI, KC_SPC,           MO(L_TH),         KC_DEL,                    KC_RALT, MO(L_FN),___E___, MO(L_RG),KC_RCTL),
 
 	/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -59,7 +59,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 	KC_LSFT, ___E___, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSFT, DZ_CYCL,
 
-	KC_LCTL, KC_LGUI, KC_LALT, KC_SPC,           MO(L_TH),         KC_DEL,                    KC_RALT, MO(L_FN),___E___, MO(L_RG),KC_RCTL),
+	KC_LCTL, KC_LALT, KC_LGUI, KC_SPC,           MO(L_TH),         KC_DEL,                    KC_RALT, MO(L_FN),___E___, MO(L_RG),KC_RCTL),
 
 	/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -78,15 +78,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	*/
 
 [L_NM] = LAYOUT(
-	___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P7,   KC_P7,   KC_P7,   ___X___, ___X___, ___X___, _CURMOD, ___X___,
+	_______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P7,   KC_P7,   KC_P7,   ___X___, ___X___, ___X___, _CURMOD, ___X___,
 
-	___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P4,   KC_P5,   KC_P6,   ___X___, ___X___, ___X___,          ___X___,
+	_______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P4,   KC_P5,   KC_P6,   ___X___, ___X___, ___X___,          ___X___,
 
-	___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P1,   KC_P2,   KC_P3,   ___X___, ___X___,                    KC_ENT,
+	_______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P1,   KC_P2,   KC_P3,   ___X___, ___X___,                    KC_ENT,
 
-	___X___, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P0,   ___X___, KC_PDOT, ___X___,          ___X___, ___X___,
+	_______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P0,   ___X___, KC_PDOT, ___X___,          _______, ___X___,
 
-	___X___, ___X___, ___X___, ___X___,          ___X___,                   ___X___,          ___X___, ___X___, ___E___, ___X___, ___X___),
+	_______, _______, _______, _______,          ___X___,                   _______,          _______, ___X___, ___E___, ___X___, _______),
 
 	/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -105,15 +105,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	*/
 
 [L_TH] = LAYOUT(
-	___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,
+	_______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,
 
-	___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          ___X___,
+	_______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          ___X___,
 
-	___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ___X___,                   ___X___,
+	_______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ___X___,                   ___X___,
 
-	___X___, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          ___X___, ___X___,
+	_______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          _______, ___X___,
 
-	___X___, ___X___, ___X___, ___X___,          _CURMOD,                   ___X___,          ___X___, XXXXXXX, ___E___, XXXXXXX, ___X___),
+	_______, _______, _______, _______,          _CURMOD,                   _______,          _______, XXXXXXX, ___E___, XXXXXXX, _______),
 
 	/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -134,13 +134,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [L_FN] = LAYOUT(
 	KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  ___X___, ___X___,
 
-	___X___, KC_MPRV, KC_MPLY, KC_MNXT, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          ___X___,
+	_______, KC_MPRV, KC_MPLY, KC_MNXT, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          ___X___,
 
-	___X___, KC_VOLD, KC_MUTE, KC_VOLU, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,                   ___X___,
+	_______, KC_VOLD, KC_MUTE, KC_VOLU, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,                   ___X___,
 
-	___X___, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, DZ_QWER, DZ_QGML, ___X___, ___X___,          ___X___, ___X___,
+	_______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, DZ_QWER, DZ_QGML, ___X___, ___X___,          _______, ___X___,
 
-	___X___, ___X___, ___X___, ___X___,          XXXXXXX,                   ___X___,          ___X___, _CURMOD, ___E___, XXXXXXX, ___X___),
+	_______, _______, _______, _______,          XXXXXXX,                   _______,          _______, _CURMOD, ___E___, XXXXXXX, _______),
 
 	/*-----------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -405,9 +405,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 			break;
 		// Print current version information
 		case DZ_VERS:
-			SEND_STRING("Current Version: 1.04    "
-			            "Date: 09/18/21     "
-			            "Most Recent Change: Fixed knightFlash being invisible, and generally cleaned up the code");
+			SEND_STRING("Current Version: 1.05    "
+			            "Date: 10/22/18     "
+			            "Most Recent Change: Swapped LAlt and LGui, made mods accessible under some temp layers.");
 			break;
 		// For general debugging
 		case DZ_DBUG:
