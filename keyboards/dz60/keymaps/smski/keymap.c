@@ -7,6 +7,15 @@
 #define ___E___ KC_NO
 #define _CURMOD KC_TRNS
 
+#define RAW_RGB(enabled, mode, hue, sat, val) ((enabled) + ((mode) << 1) + ((hue) << 7) + (((uint32_t)(sat)) << 16) + (((uint32_t)(val)) << 24))
+
+#define NUM_LOCK_GLOW RAW_RGB(1, 1, 120, 255, 0)
+#define CAPS_LOCK_GLOW RAW_RGB(1, 1, 0, 255, 0)
+#define BOTH_LOCK_GLOW RAW_RGB(1, 1, 60, 255, 0)
+#define DEFAULT_GLOW RAW_RGB(1, 14, 270, 255, 255)
+#define LAYER_FLASH_MODE 23
+#define LAYER_FLASH_LEN 500
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
     {
      /* Layer 0: Default Layer (QGMLWY)
@@ -173,16 +182,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
 rgblight_config_t origGlowState; // Original user-set underglow state
 rgblight_config_t prevTempGlowState; // Long-term temp underglow (ie lock lights)
 
-// Preset Underglows
-rgblight_config_t numLockGlow;
-rgblight_config_t capsLockGlow;
-rgblight_config_t bothLockGlow;
-rgblight_config_t defaultGlow;
-
-rgblight_config_t knightFlash;
-
 bool isGlowTemp = false;
-uint16_t tempGlowDuration;
+uint16_t tempGlowDuration = 0;
 uint16_t tempGlowStart = 0;
 rgblight_config_t rgblight_config;
 
@@ -213,10 +214,19 @@ void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint1
     isGlowTemp = true;
 }
 
-void flashGlow(rgblight_config_t tempState, uint16_t hue, uint16_t duration) {
-    tempState.hue = hue;
-    tempState.val = rgblight_config.val;
-    setTempGlow(tempState, rgblight_config, duration);
+void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration) {
+    setTempGlow((rgblight_config_t)RAW_RGB(1, mode, hue, 255, rgblight_config.val), rgblight_config, duration);
+}
+
+void indicateLayer(void) {
+    uint16_t layerHue = 270;
+    if (default_layer_state == L_QG + 1) {
+	layerHue = 120;
+    } else if (default_layer_state == L_QW + 1) {
+	layerHue = 0;
+    }
+
+    flashGlow(LAYER_FLASH_MODE, layerHue, LAYER_FLASH_LEN);    
 }
 
 void lockGlow(rgblight_config_t tempState) {
@@ -225,10 +235,10 @@ void lockGlow(rgblight_config_t tempState) {
 
 // Reset the underglow to either the lock light or the user's original underglow
 void restoreGlow(bool fromTimer) {
-    if (origGlowState.raw << 8 == numLockGlow.raw << 8		// If the prev state was the same as a lock state, change to my usual
-	|| origGlowState.raw << 8 == capsLockGlow.raw << 8	// Shift ignores brightness, and compares everything else
-	|| origGlowState.raw << 8 == bothLockGlow.raw << 8)
-	origGlowState.raw = defaultGlow.raw;
+    if (origGlowState.raw << 8 == NUM_LOCK_GLOW << 8  // If the prev state was the same as a lock state, change to the default
+	|| origGlowState.raw << 8 == CAPS_LOCK_GLOW << 8	// Shift ignores brightness, and compares everything else
+	|| origGlowState.raw << 8 == BOTH_LOCK_GLOW << 8)
+	origGlowState.raw = DEFAULT_GLOW;
 
     rgblight_config_t restoreState;
 
@@ -272,14 +282,14 @@ void changeLockState(bool numOn, bool capsOn, uint8_t changedLock) {
     if (numOn) {
 	layer_on(L_NM);
 	if (capsOn) {
-	    newGlowState.raw = bothLockGlow.raw;
+	    newGlowState.raw = BOTH_LOCK_GLOW;
 	} else {
-	    newGlowState.raw = numLockGlow.raw;
+	    newGlowState.raw = NUM_LOCK_GLOW;
 	}
     } else {
 	layer_off(L_NM);
 	if (capsOn) {
-	    newGlowState.raw = capsLockGlow.raw;
+	    newGlowState.raw = CAPS_LOCK_GLOW;
 	} else {
 	    restoreGlow(false);
 	    return;
@@ -295,25 +305,25 @@ void stepGlowValues(uint16_t hsvToChange, int8_t stepSize) {
     uint16_t* current;
     uint16_t propMax = 255;
     uint8_t rollover = 255;
-    uint8_t rollunder = 0;
+    uint16_t rollunder = 0;
 
     uint16_t hue = rgblight_config.hue;
     uint16_t sat = rgblight_config.sat;
     uint16_t val = rgblight_config.val;
-    
+
     switch (hsvToChange) {
     case HUE:
 	current = &hue;
 
 	propMax = 359;
 	rollover = 0;
-	rollunder = 255;
+	rollunder = 359;
 	break;
     case SAT:
 	current = &sat;
 	break;
     case VAL:
-	current = &val;
+     	current = &val;
 	break;
     default:
 	return;
@@ -327,11 +337,11 @@ void stepGlowValues(uint16_t hsvToChange, int8_t stepSize) {
     } else {
 	*current = *current + stepSize;
     }
-    
+
     if (hsvToChange == VAL && *current == 0) {
 	*current = -stepSize;
     }
-    
+
     rgblight_sethsv(hue, sat, val);
 }
 
@@ -343,13 +353,12 @@ void matrix_scan_user() {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    //char debugMessage [20];
+    //  char debugMessage [20];
 
     if (!record->event.pressed)
 	return true;
 
     switch (keycode) {
-	// Step color properties
     case DZ_HU_D:
   	stepGlowValues(HUE, -HUE_STEP);
 	break;
@@ -368,28 +377,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case DZ_VA_I:
 	stepGlowValues(VAL, VAL_STEP);
 	break;
-	// Set the layout to QWERTY
     case DZ_QWER:
-	flashGlow(knightFlash, 0, 500);
-
 	set_single_persistent_default_layer(L_QW);
+	indicateLayer();
 	break;
-	// Set the layout to QGMLWY
     case DZ_QGML:
-	flashGlow(knightFlash, 120, 500);
-
 	set_single_persistent_default_layer(L_QG);
+	indicateLayer();
 	break;
-	// Cycle between layouts
     case DZ_CYCL:
 	if (default_layer_state == L_QG + 1) {
-	    flashGlow(knightFlash, 0, 500);
-
 	    set_single_persistent_default_layer(L_QW);
+	    indicateLayer();
 	} else if (default_layer_state == L_QW + 1) {
-	    flashGlow(knightFlash, 120, 500);
-
 	    set_single_persistent_default_layer(L_QG);
+	    indicateLayer();
 	}
 	break;
     case DZ_VERS:
@@ -398,14 +400,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 		    "Most Recent Change: Moved LGui to the center thumb key and shifted LCtrl and LAlt to the right.");
 	break;
     case DZ_DBUG:
-	//sprintf(debugMessage, "%lu | %u", default_layer_state, L_QG);
-	//send_string(debugMessage);
+//	sprintf(debugMessage, "%lu ", DEFAULT_GLOW);
+//	send_string(debugMessage);
 	break;
-    case CURR_LR: // Flashes the color of the current layer
+    case CURR_LR:
 	if (default_layer_state == L_QG + 1) {
-	    flashGlow(knightFlash, 120, 500);
+	    indicateLayer();
 	} else if (default_layer_state == L_QW + 1) {
-	    flashGlow(knightFlash, 0, 500);
+	    indicateLayer();
 	}
     }
 
@@ -425,10 +427,4 @@ void led_set_user(uint8_t usb_led) {
 void matrix_init_user(void) {
     // Initialize all the preset underglows
     prevTempGlowState.raw = 0;
-
-    numLockGlow = setRgblight(1, 1, 120, 255, 0);
-    capsLockGlow = setRgblight(1, 1, 0, 255, 0);
-    bothLockGlow = setRgblight(1, 1, 60, 255, 0);
-    defaultGlow = setRgblight(1, 14, 270, 255, 255);
-    knightFlash = setRgblight(1, 23, 0, 255, 255);
 }

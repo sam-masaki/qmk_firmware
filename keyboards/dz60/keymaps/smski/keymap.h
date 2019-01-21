@@ -25,13 +25,16 @@ enum custom_layers {
 	L_RG
 };
 
+
+
 enum underglowProp {
 	HUE = 0,
 	SAT,
 	VAL
 };
 
-void flashGlow(rgblight_config_t tempState, uint16_t hue, uint16_t duration);
+void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration);
+void indicateLayer(void);
 void lockGlow(rgblight_config_t tempState);
 void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration);
 void restoreGlow(bool fromTimer);
