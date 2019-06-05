@@ -3,9 +3,6 @@
 #define HUE_STEP 45
 #define SAT_STEP 51
 #define VAL_STEP 51
-#define ___X___ KC_NO
-#define ___E___ KC_NO
-#define _CURMOD KC_TRNS
 
 #define RAW_RGB(enabled, mode, hue, sat, val) ((enabled) + ((mode) << 1) + ((hue) << 7) + (((uint32_t)(sat)) << 16) + (((uint32_t)(val)) << 24))
 
@@ -16,60 +13,62 @@
 #define LAYER_FLASH_MODE 23
 #define LAYER_FLASH_LEN 500
 
+#define ___X___ KC_NO    // Disabled keys
+#define ___E___ KC_NO    // Nonexistent keys
+#define _CURMOD KC_TRNS  // Active modifier
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   /* Layer 0: Default Layer (QGMLWY)
    * ,-----------------------------------------------------------.
-   * |Esc|  1|  2|  3|  4|  5|  6|  7|  8|  9|  0|  -|  =|Num|Cap|
+   * | ~ |  1|  2|  3|  4|  5|  6|  7|  8|  9|  0|  -|  =|Num|Cap|
    * |-----------------------------------------------------------|
    * |Tab  |  Q|  G|  M|  L|  W|  Y|  F|  U|  B|  ;|  [|  ]|  \  |
    * |-----------------------------------------------------------|
    * |Bksp  |  D|  S|  T|  N|  R|  I|  A|  E|  O|  H|  '|  Return|
    * |-----------------------------------------------------------|
-   * |Shift   |  Z|  X|  C|  V|  J|  K|  P|  ,|  .|  /| Shift|idk|
+   * |Shift   |  Z|  X|  C|  V|  J|  K|  P|  ,|  .|  /| Shift|Lyr|
    * |-----------------------------------------------------------|
    * |Ctrl|Gui |Alt |   Space  | Fn1|  Del  | Alt| Fn2| FN3| Ctrl|
    * `-----------------------------------------------------------'
    */
 
   [L_QG] = LAYOUT(
-      KC_ESC,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_NLCK, KC_CAPS,
-
+  /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
+      KC_TILD, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_NLCK, KC_CAPS,
+  /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       KC_TAB,  KC_Q,    KC_G,    KC_M,    KC_L,    KC_W,    KC_Y,    KC_F,    KC_U,    KC_B,    KC_SCLN, KC_LBRC, KC_RBRC,          KC_BSLS,
-
+  /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
       KC_BSPC, KC_D,    KC_S,    KC_T,    KC_N,    KC_R,    KC_I,    KC_A,    KC_E,    KC_O,    KC_H,    KC_QUOT,                   KC_ENT,
-
+  /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       KC_LSFT, ___E___, KC_Z,    KC_X,    KC_C,    KC_V,    KC_J,    KC_K,    KC_P,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSFT, DZ_CYCL,
-
+  /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
       KC_LCTL, KC_LGUI, KC_LALT, KC_SPC,           MO(L_TH),         KC_DEL,                    KC_RALT, MO(L_FN),___E___, MO(L_RG),KC_RCTL),
-
-  /*-----------------------------------------------------------------------------------------------------------------------------------*/
 
   /* Layer 1: QWERTY Layer
    * ,-----------------------------------------------------------.
-   * |Esc|  1|  2|  3|  4|  5|  6|  7|  8|  9|  0|  -|  =|Num|Cap|
+   * |   |   |   |   |   |   |   |   |   |   |   |   |   |   |Bsp|
    * |-----------------------------------------------------------|
-   * |Tab  |  Q|  W|  E|  R|  T|  Y|  U|  I|  O|  P|  [|  ]|  \  |
+   * |     |  Q|  W|  E|  R|  T|  Y|  U|  I|  O|  P|   |   |     |
    * |-----------------------------------------------------------|
-   * |Bksp  |  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|  '|  Return|
+   * |Caps  |  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|   |        |
    * |-----------------------------------------------------------|
-   * |Shift   |  Z|  X|  C|  V|  B|  N|  M|  ,|  .|  /| Shift|idk|
+   * |        |  Z|  X|  C|  V|  B|  N|  M|   |   |   |      |   |
    * |-----------------------------------------------------------|
-   * |Ctrl|Gui |Alt |   Space  | Fn1|  Del  | Alt| Fn2| FN3| Ctrl|
+   * |    |    |    |          |    |       |    |    |    |     |
    * `-----------------------------------------------------------'
    */
 
   [L_QW] = LAYOUT(
+  /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BSPC,
-
+  /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       _______, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    _______, _______,          _______,
-
+  /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
       KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, _______,                   _______,
-
+  /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       _______, ___E___, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    _______, _______, _______,          _______, _______,
-
+  /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
       _______, _______, _______, _______,          _______,          _______,                   _______, _______, ___E___, _______, _______),
-
-  /*-----------------------------------------------------------------------------------------------------------------------------------*/
 
   /* Layer 2: Numpad
    * ,-----------------------------------------------------------.
@@ -86,17 +85,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [L_NM] = LAYOUT(
-      _______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P7,   KC_P7,   KC_P7,   ___X___, ___X___, ___X___, _CURMOD, ___X___,
-
+  /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
+      ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P7,   KC_P7,   KC_P7,   ___X___, ___X___, ___X___, _CURMOD, _______,
+  /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       _______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P4,   KC_P5,   KC_P6,   ___X___, ___X___, ___X___,          ___X___,
-
+  /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
       _______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P1,   KC_P2,   KC_P3,   ___X___, ___X___,                    KC_ENT,
-
+  /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       _______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P0,   ___X___, KC_PDOT, ___X___,          _______, ___X___,
-
-      _______, _______, _______, _______,          _______,                   _______,          _______, ___X___, ___E___, ___X___, _______),
-
-  /*-----------------------------------------------------------------------------------------------------------------------------------*/
+  /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
+      _______, _______, _______, _______,          ___X___,                   _______,          _______, ___X___, ___E___, ___X___, _______),
 
   /* Layer 3: Thumb-Function Layer
    * ,-----------------------------------------------------------.
@@ -113,44 +111,42 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [L_TH] = LAYOUT(
+  /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
       _______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,
-
+  /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       _______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          ___X___,
-
+  /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
       _______, KC_HOME, KC_PGDN, KC_PGUP, KC_END,  ___X___, ___X___, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ___X___,                   ___X___,
-
+  /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       _______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          _______, ___X___,
-
+  /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
       _______, _______, _______, _______,          _CURMOD,                   _______,          _______, XXXXXXX, ___E___, XXXXXXX, _______),
-
-  /*-----------------------------------------------------------------------------------------------------------------------------------*/
 
   /* Layer 4: Multi-Hand Function Layer
    * ,-----------------------------------------------------------.
-   * | ~ | F1| F2| F3| F4| F5| F6| F7| F8| F9|F10|F11|F12|   |   |
+   * | ~ | F1| F2| F3| F4| F5| F6| F7| F8| F9|F10|F11|F12|Pdn|Pup|
    * |-----------------------------------------------------------|
    * |     | <<| P | >>|   |   |   |   | ^ |   |   |   |   |     |
    * |-----------------------------------------------------------|
    * |      | V-| M | V+|   |   |   | < | v | > |   |   |        |
    * |-----------------------------------------------------------|
-   * |        |   |   |   |   |   |   | L1| L0|   |   |      |   |
+   * |        |   |   |   |   |   |   |   |   |   |   |      |   |
    * |-----------------------------------------------------------|
    * |    |    |    |          |    |       |    | XX |    |     |
    * `-----------------------------------------------------------'
    */
 
   [L_FN] = LAYOUT(
+  /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
       KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PGDN, KC_PGUP,
-
+  /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       _______, KC_MPRV, KC_MPLY, KC_MNXT, ___X___, ___X___, ___X___, ___X___, KC_UP,   ___X___, ___X___, ___X___, ___X___,          ___X___,
-
+  /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
       _______, KC_VOLD, KC_MUTE, KC_VOLU, ___X___, ___X___, ___X___, KC_LEFT, KC_DOWN, KC_RGHT, ___X___, ___X___,                   ___X___,
-
+  /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       _______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          _______, ___X___,
-
+  /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
       _______, _______, _______, _______,          _______,                   _______,          _______, _CURMOD, ___E___, XXXXXXX, _______),
-
-  /*-----------------------------------------------------------------------------------------------------------------------------------*/
 
   /* Layer 5: RGB/Meta Keyboard Functions
    * ,-----------------------------------------------------------.
@@ -167,14 +163,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
   [L_RG] = LAYOUT(
-      RGB_TOG, RGB_M_P, RGB_M_B, RGB_M_R, RGB_M_SW,RGB_M_SN,RGB_M_K, RGB_M_X, RGB_M_G, RGB_M_T, ___X___, ___X___, ___X___, XXXXXXX, RESET,
-
+  /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
+      RGB_TOG, RGB_M_P, RGB_M_B, RGB_M_R, RGB_M_SW,RGB_M_SN,RGB_M_K, RGB_M_X, RGB_M_G, RGB_M_T, ___X___, ___X___, ___X___, XXXXXXX, ___X___,
+  /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       DZ_HU_D, RGB_HUD, RGB_HUI, DZ_HU_I, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, RGB_RMOD,RGB_MOD,          ___X___,
-
-      DZ_SA_D, RGB_SAD, RGB_SAI, DZ_SA_I, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,                   DZ_DBUG,
-
+  /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
+      DZ_SA_D, RGB_SAD, RGB_SAI, DZ_SA_I, ___X___, ___X___, ___X___, ___X___, RESET,   ___X___, ___X___, ___X___,                   DZ_DBUG,
+  /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       DZ_VA_D, ___E___, RGB_VAD, RGB_VAI, DZ_VA_I, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          ___X___, CURR_LR,
-
+  /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
       DZ_VERS, ___X___, ___X___, ___X___,          _______,                   ___X___,          ___X___, XXXXXXX, ___E___, _CURMOD, ___X___),
 };
 
