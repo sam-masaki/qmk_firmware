@@ -183,7 +183,15 @@ uint16_t tempGlowDuration = 0;
 uint16_t tempGlowStart = 0;
 rgblight_config_t rgblight_config;
 
-void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration) {
+static void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration);
+static void indicateLayer(void);
+static void lockGlow(rgblight_config_t tempState);
+static void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration);
+static void restoreGlow(bool fromTimer);
+static void changeLockState(bool numOn, bool capsOn, uint8_t changedLock);
+static void stepGlowValues(uint16_t hsvToChange, int8_t stepSize);
+
+static void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration) {
   if (duration != 0) { // If this is an underglow flash
     if (isGlowTemp && tempGlowStart == 0) // And this is on top of a long-temp underglow
       prevTempGlowState.raw = rgblight_config.raw;
@@ -210,11 +218,11 @@ void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint1
   isGlowTemp = true;
 }
 
-void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration) {
+static void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration) {
   setTempGlow((rgblight_config_t)RAW_RGB(1, mode, hue, 255, rgblight_config.val), rgblight_config, duration);
 }
 
-void indicateLayer(void) {
+static void indicateLayer(void) {
   uint16_t layerHue = 270;
   if (default_layer_state == L_QG + 1) {
     layerHue = 120;
@@ -225,12 +233,12 @@ void indicateLayer(void) {
   flashGlow(LAYER_FLASH_MODE, layerHue, LAYER_FLASH_LEN);
 }
 
-void lockGlow(rgblight_config_t tempState) {
+static void lockGlow(rgblight_config_t tempState) {
   setTempGlow(tempState, rgblight_config, 0);
 }
 
 // Reset the underglow to either the lock light or the user's original underglow
-void restoreGlow(bool fromTimer) {
+static void restoreGlow(bool fromTimer) {
   if (origGlowState.raw << 8 == NUM_LOCK_GLOW << 8  // If the prev state was the same as a lock state, change to the default
       || origGlowState.raw << 8 == CAPS_LOCK_GLOW << 8	// Shift ignores brightness, and compares everything else
       || origGlowState.raw << 8 == BOTH_LOCK_GLOW << 8)
@@ -257,7 +265,7 @@ void restoreGlow(bool fromTimer) {
 }
 
 // Set lock lights and the custom numpad layer based on the current active locks
-void changeLockState(bool numOn, bool capsOn, uint8_t changedLock) {
+static void changeLockState(bool numOn, bool capsOn, uint8_t changedLock) {
   if ((!(changedLock & (1 << USB_LED_CAPS_LOCK)))
       && (!(changedLock & (1 << USB_LED_NUM_LOCK))))
     return;
@@ -286,7 +294,7 @@ void changeLockState(bool numOn, bool capsOn, uint8_t changedLock) {
   lockGlow(newGlowState);
 }
 
-void stepGlowValues(uint16_t hsvToChange, int8_t stepSize) {
+static void stepGlowValues(uint16_t hsvToChange, int8_t stepSize) {
   uint16_t* current;
   uint16_t propMax = 255;
   uint8_t rollover = 255;

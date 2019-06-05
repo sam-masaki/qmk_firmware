@@ -32,12 +32,4 @@ enum underglowProp {
   VAL
 };
 
-void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration);
-void indicateLayer(void);
-void lockGlow(rgblight_config_t tempState);
-void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration);
-void restoreGlow(bool fromTimer);
-void changeLockState(bool numOn, bool capsOn, uint8_t changedLock);
-void stepGlowValues(uint16_t hsvToChange, int8_t stepSize);
-
 #endif
