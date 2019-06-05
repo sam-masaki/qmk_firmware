@@ -3,15 +3,22 @@
 #define HUE_STEP 45
 #define SAT_STEP 51
 #define VAL_STEP 51
+#define LAYER_FLASH_MODE 23
+#define LAYER_FLASH_LEN 500
 
-#define RAW_RGB(enabled, mode, hue, sat, val) ((enabled) + ((mode) << 1) + ((hue) << 7) + (((uint32_t)(sat)) << 16) + (((uint32_t)(val)) << 24))
+#define RAW_RGB(enabled, mode, hue, sat, val) ((enabled) \
+                                               + ((mode) << 1) \
+                                               + ((hue) << 7) \
+                                               + (((uint32_t)(sat)) << 16) \
+                                               + (((uint32_t)(val)) << 24))
 
 #define NUM_LOCK_GLOW RAW_RGB(1, 1, 120, 255, 0)
 #define CAPS_LOCK_GLOW RAW_RGB(1, 1, 0, 255, 0)
 #define BOTH_LOCK_GLOW RAW_RGB(1, 1, 60, 255, 0)
 #define DEFAULT_GLOW RAW_RGB(1, 14, 270, 255, 255)
-#define LAYER_FLASH_MODE 23
-#define LAYER_FLASH_LEN 500
+
+#define NUM_ACTIVE(led_int) ((led_int) & (1 << USB_LED_NUM_LOCK))
+#define CAP_ACTIVE(led_int) ((led_int) & (1 << USB_LED_CAPS_LOCK))
 
 #define ___X___ KC_NO    // Disabled keys
 #define ___E___ KC_NO    // Nonexistent keys
@@ -175,6 +182,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       DZ_VERS, ___X___, ___X___, ___X___,          _______,                   ___X___,          ___X___, XXXXXXX, ___E___, _CURMOD, ___X___),
 };
 
+static void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration);
+static void indicateLayer(void);
+static void lockGlow(rgblight_config_t tempState);
+static void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration);
+static void restoreGlow(bool fromTimer);
+static void updateLocks(uint8_t usb_led);
+static void stepGlowValues(uint16_t hsvToChange, int8_t stepSize);
+
 rgblight_config_t origGlowState; // Original user-set underglow state
 rgblight_config_t prevTempGlowState; // Long-term temp underglow (ie lock lights)
 
@@ -182,14 +197,6 @@ bool isGlowTemp = false;
 uint16_t tempGlowDuration = 0;
 uint16_t tempGlowStart = 0;
 rgblight_config_t rgblight_config;
-
-static void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration);
-static void indicateLayer(void);
-static void lockGlow(rgblight_config_t tempState);
-static void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration);
-static void restoreGlow(bool fromTimer);
-static void changeLockState(bool numOn, bool capsOn, uint8_t changedLock);
-static void stepGlowValues(uint16_t hsvToChange, int8_t stepSize);
 
 static void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration) {
   if (duration != 0) { // If this is an underglow flash
@@ -264,29 +271,24 @@ static void restoreGlow(bool fromTimer) {
   prevTempGlowState.raw = 0;
 }
 
-// Set lock lights and the custom numpad layer based on the current active locks
-static void changeLockState(bool numOn, bool capsOn, uint8_t changedLock) {
-  if ((!(changedLock & (1 << USB_LED_CAPS_LOCK)))
-      && (!(changedLock & (1 << USB_LED_NUM_LOCK))))
-    return;
-
+// Set lock lights and numpad layer based on the active locks
+static void updateLocks(uint8_t usb_led) {
   rgblight_config_t newGlowState;
 
-  if (numOn) {
+  if (NUM_ACTIVE(usb_led))
     layer_on(L_NM);
-    if (capsOn) {
-      newGlowState.raw = BOTH_LOCK_GLOW;
-    } else {
-      newGlowState.raw = NUM_LOCK_GLOW;
-    }
-  } else {
+  else
     layer_off(L_NM);
-    if (capsOn) {
-      newGlowState.raw = CAPS_LOCK_GLOW;
-    } else {
-      restoreGlow(false);
-      return;
-    }
+
+  if (NUM_ACTIVE(usb_led) && CAP_ACTIVE(usb_led)) {
+    newGlowState.raw = BOTH_LOCK_GLOW;
+  } else if (NUM_ACTIVE(usb_led) && !CAP_ACTIVE(usb_led)) {
+    newGlowState.raw = NUM_LOCK_GLOW;
+  } else if (!NUM_ACTIVE(usb_led) && CAP_ACTIVE(usb_led)) {
+    newGlowState.raw = CAPS_LOCK_GLOW;
+  } else {
+    restoreGlow(false);
+    return;
   }
 
   newGlowState.val = rgblight_config.val;
@@ -339,15 +341,12 @@ static void stepGlowValues(uint16_t hsvToChange, int8_t stepSize) {
 }
 
 void matrix_scan_user() {
-  // Restore from temporary underglow
   if (tempGlowStart != 0 && timer_elapsed(tempGlowStart) > tempGlowDuration) {
     restoreGlow(true);
   }
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  //  char debugMessage [20];
-
   if (!record->event.pressed)
     return true;
 
@@ -393,8 +392,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                   "Most Recent Change: Moved LGui to the center thumb key and shifted LCtrl and LAlt to the right.");
       break;
     case DZ_DBUG:
-      //	sprintf(debugMessage, "%lu ", DEFAULT_GLOW);
-      //	send_string(debugMessage);
+      // send_string()
       break;
     case CURR_LR:
       if (default_layer_state == L_QG + 1) {
@@ -409,10 +407,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 uint8_t prevLedState = 0;
 void led_set_user(uint8_t usb_led) {
-  // When a lock is changed, call changeLockState to set the underglow
-  if (usb_led != prevLedState) {
-    changeLockState(usb_led & (1<<USB_LED_NUM_LOCK), usb_led & (1<<USB_LED_CAPS_LOCK), prevLedState ^ usb_led);
-
+  if (usb_led != prevLedState) { // If a lock is changed
+    uint8_t diff = prevLedState ^ usb_led;
+    if (NUM_ACTIVE(diff) ||
+        CAP_ACTIVE(diff)) {
+      updateLocks(usb_led);
+    }
     prevLedState = usb_led;
   }
 }
