@@ -184,11 +184,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 static void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration);
 static void indicateLayer(void);
-static void lockGlow(rgblight_config_t tempState);
-static void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration);
+static void lockGlow(rgblight_config_t *tempState);
+static void setTempGlow(rgblight_config_t *tempState, uint16_t duration);
 static void restoreGlow(bool fromTimer);
 static void updateLocks(uint8_t usb_led);
-//static void stepGlowValues(uint16_t hsvToChange, int8_t stepSize);
 
 rgblight_config_t origGlowState; // Original user-set underglow state
 rgblight_config_t prevTempGlowState; // Long-term temp underglow (ie lock lights)
@@ -198,35 +197,39 @@ uint16_t tempGlowDuration = 0;
 uint16_t tempGlowStart = 0;
 rgblight_config_t rgblight_config;
 
-static void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration) {
-  if (duration != 0) { // If this is an underglow flash
-    if (isGlowTemp && tempGlowStart == 0) // And this is on top of a long-temp underglow
-      prevTempGlowState.raw = rgblight_config.raw;
+static void setTempGlow(rgblight_config_t *tempState, uint16_t duration) {
+  if (duration != 0) {                     // If this is a flash
+    if (isGlowTemp && tempGlowStart == 0)  // And its on top of a lock glow
+      prevTempGlowState.raw = rgblight_config.raw;  // Save the lock glow
 
     tempGlowDuration = duration;
     tempGlowStart = timer_read();
-  }
-  else if (tempGlowDuration != 0) { // If the current underglow is a flash and the new one isn't
-    prevTempGlowState.raw = tempState.raw; // Make it restore to this new underglow
+  } else if (tempGlowDuration != 0) {  // If this is a lock glow on a flash
+    // Make it restore to this glow state when the flash is done
+    prevTempGlowState.raw = tempState->raw;
     return;
   }
 
-  if (!isGlowTemp) // If the current underglow is the user's, save it to origGlowState
-    origGlowState = prevState;
+  // If the current glow is the user's, save it
+  if (!isGlowTemp)
+    origGlowState = rgblight_config;
 
-  if (origGlowState.enable == 0) { // Turn on underglow if it's off, and use a non-blinding brightness
+  // If it's off, turn it on to a non-blinding brightness
+  if (origGlowState.enable == 0) {
     rgblight_enable();
-    tempState.val = 70;
+    tempState->val = 70;
   }
 
-  rgblight_mode(tempState.mode);
-  rgblight_sethsv(tempState.hue, tempState.sat, tempState.val);
+  rgblight_mode(tempState->mode);
+  rgblight_sethsv(tempState->hue, tempState->sat, tempState->val);
 
   isGlowTemp = true;
 }
 
 static void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration) {
-  setTempGlow((rgblight_config_t)RAW_RGB(1, mode, hue, 255, rgblight_config.val), rgblight_config, duration);
+  rgblight_config_t flash_conf;
+  flash_conf.raw = RAW_RGB(1, mode, hue, 255, rgblight_config.val);
+  setTempGlow(&flash_conf, duration);
 }
 
 static void indicateLayer(void) {
@@ -240,14 +243,14 @@ static void indicateLayer(void) {
   flashGlow(LAYER_FLASH_MODE, layerHue, LAYER_FLASH_LEN);
 }
 
-static void lockGlow(rgblight_config_t tempState) {
-  setTempGlow(tempState, rgblight_config, 0);
+static void lockGlow(rgblight_config_t *tempState) {
+  setTempGlow(tempState, 0);
 }
 
 // Reset the underglow to either the lock light or the user's original underglow
 static void restoreGlow(bool fromTimer) {
-  if (origGlowState.raw << 8 == NUM_LOCK_GLOW << 8  // If the prev state was the same as a lock state, change to the default
-      || origGlowState.raw << 8 == CAPS_LOCK_GLOW << 8	// Shift ignores brightness, and compares everything else
+  if (origGlowState.raw << 8 == NUM_LOCK_GLOW << 8      // If the prev state was the same as a lock state, change to the default
+      || origGlowState.raw << 8 == CAPS_LOCK_GLOW << 8  // Shift ignores brightness, and compares everything else
       || origGlowState.raw << 8 == BOTH_LOCK_GLOW << 8)
     origGlowState.raw = DEFAULT_GLOW;
 
@@ -293,7 +296,7 @@ static void updateLocks(uint8_t usb_led) {
 
   newGlowState.val = rgblight_config.val;
 
-  lockGlow(newGlowState);
+  lockGlow(&newGlowState);
 }
 
 static void stepHue(bool subtract) {
