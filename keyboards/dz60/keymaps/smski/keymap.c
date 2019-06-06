@@ -188,7 +188,7 @@ static void lockGlow(rgblight_config_t tempState);
 static void setTempGlow(rgblight_config_t tempState, rgblight_config_t prevState, uint16_t duration);
 static void restoreGlow(bool fromTimer);
 static void updateLocks(uint8_t usb_led);
-static void stepGlowValues(uint16_t hsvToChange, int8_t stepSize);
+//static void stepGlowValues(uint16_t hsvToChange, int8_t stepSize);
 
 rgblight_config_t origGlowState; // Original user-set underglow state
 rgblight_config_t prevTempGlowState; // Long-term temp underglow (ie lock lights)
@@ -296,48 +296,46 @@ static void updateLocks(uint8_t usb_led) {
   lockGlow(newGlowState);
 }
 
-static void stepGlowValues(uint16_t hsvToChange, int8_t stepSize) {
-  uint16_t* current;
-  uint16_t propMax = 255;
-  uint8_t rollover = 255;
-  uint16_t rollunder = 0;
-
+static void stepHue(bool subtract) {
   uint16_t hue = rgblight_config.hue;
-  uint16_t sat = rgblight_config.sat;
-  uint16_t val = rgblight_config.val;
 
-  switch (hsvToChange) {
-    case HUE:
-      current = &hue;
-
-      propMax = 359;
-      rollover = 0;
-      rollunder = 359;
-      break;
-    case SAT:
-      current = &sat;
-      break;
-    case VAL:
-      current = &val;
-      break;
-    default:
-      return;
-      break;
-  }
-
-  if (stepSize > 0 && *current > propMax - stepSize) {
-    *current = rollover;
-  } else if (stepSize < 0 && *current < -stepSize) {
-    *current = rollunder;
+  if (subtract) {
+    hue -= HUE_STEP;
+    if (hue > 359)
+      hue = 359;
   } else {
-    *current = *current + stepSize;
+    hue += HUE_STEP;
+    if (hue > 359)
+      hue = 0;
   }
+  rgblight_sethsv(hue, rgblight_config.sat, rgblight_config.val);
+}
 
-  if (hsvToChange == VAL && *current == 0) {
-    *current = -stepSize;
+static uint8_t stepGlow(uint8_t orig, bool subtract, uint8_t amount) {
+  if (subtract) {
+    if (orig < amount)
+      orig = 0;
+    else
+      orig -= amount;
+  } else {
+    if ((255 - orig) < amount)
+      orig = 255;
+    else
+      orig += amount;
   }
+  return orig;
+}
 
-  rgblight_sethsv(hue, sat, val);
+static void stepSat(bool subtract) {
+  rgblight_sethsv(rgblight_config.hue,
+                  stepGlow(rgblight_config.sat, subtract, SAT_STEP),
+                  rgblight_config.val);
+}
+
+static void stepVal(bool subtract) {
+  rgblight_sethsv(rgblight_config.hue,
+                  rgblight_config.sat,
+                  stepGlow(rgblight_config.val, subtract, VAL_STEP));
 }
 
 void matrix_scan_user() {
@@ -352,22 +350,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   switch (keycode) {
     case DZ_HU_D:
-      stepGlowValues(HUE, -HUE_STEP);
+      stepHue(true);
       break;
     case DZ_HU_I:
-      stepGlowValues(HUE, HUE_STEP);
+      stepHue(false);
       break;
     case DZ_SA_D:
-      stepGlowValues(SAT, -SAT_STEP);
+      stepSat(true);
       break;
     case DZ_SA_I:
-      stepGlowValues(SAT, SAT_STEP);
+      stepSat(false);
       break;
     case DZ_VA_D:
-      stepGlowValues(VAL, -VAL_STEP);
+      stepVal(true);
       break;
     case DZ_VA_I:
-      stepGlowValues(VAL, VAL_STEP);
+      stepVal(false);
       break;
     case DZ_QWER:
       set_single_persistent_default_layer(L_QW);
