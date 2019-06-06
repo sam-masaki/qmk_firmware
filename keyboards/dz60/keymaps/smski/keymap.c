@@ -41,7 +41,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_QG] = LAYOUT(
   /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
-      KC_TILD, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_NLCK, KC_CAPS,
+      KC_GRV, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_NLCK, KC_CAPS,
   /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       KC_TAB,  KC_Q,    KC_G,    KC_M,    KC_L,    KC_W,    KC_Y,    KC_F,    KC_U,    KC_B,    KC_SCLN, KC_LBRC, KC_RBRC,          KC_BSLS,
   /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
@@ -145,7 +145,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_FN] = LAYOUT(
   /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
-      KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PGDN, KC_PGUP,
+      KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PGDN, KC_PGUP,
   /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       _______, KC_MPRV, KC_MPLY, KC_MNXT, ___X___, ___X___, ___X___, ___X___, KC_UP,   ___X___, ___X___, ___X___, ___X___,          ___X___,
   /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
@@ -182,15 +182,29 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       DZ_VERS, ___X___, ___X___, ___X___,          _______,                   ___X___,          ___X___, XXXXXXX, ___E___, _CURMOD, ___X___),
 };
 
+// Sets the underglow into a temporary mode for duration milliseconds
 static void flashGlow(uint8_t mode, uint16_t hue, uint16_t duration);
+
+// Flashes the underglow to show the current active layer
 static void indicateLayer(void);
+
+// Sets the underglow into a lock indicator state
 static void lockGlow(rgblight_config_t *tempState);
+
+// Sets the current underglow to the given tempState for duration
+// milliseconds, or sets it indefinitely if duration is zero
 static void setTempGlow(rgblight_config_t *tempState, uint16_t duration);
+
+// Reset the underglow to an existing lock glow or the user's glow
 static void restoreGlow(bool fromTimer);
+
+// Sets the lock glow and the numpad layer based on lock leds
 static void updateLocks(uint8_t usb_led);
 
-rgblight_config_t origGlowState; // Original user-set underglow state
-rgblight_config_t prevTempGlowState; // Long-term temp underglow (ie lock lights)
+// Original user-set underglow state
+rgblight_config_t origGlowState;
+// Long-term temp underglow (ie lock lights)
+rgblight_config_t prevTempGlowState;
 
 bool isGlowTemp = false;
 uint16_t tempGlowDuration = 0;
@@ -247,26 +261,28 @@ static void lockGlow(rgblight_config_t *tempState) {
   setTempGlow(tempState, 0);
 }
 
-// Reset the underglow to either the lock light or the user's original underglow
 static void restoreGlow(bool fromTimer) {
-  if (origGlowState.raw << 8 == NUM_LOCK_GLOW << 8      // If the prev state was the same as a lock state, change to the default
-      || origGlowState.raw << 8 == CAPS_LOCK_GLOW << 8  // Shift ignores brightness, and compares everything else
+  // If the original state is identical to a lock light (ignoring value),
+  // reset to the default so it's clear the lock is off
+  if (origGlowState.raw << 8 == NUM_LOCK_GLOW << 8
+      || origGlowState.raw << 8 == CAPS_LOCK_GLOW << 8
       || origGlowState.raw << 8 == BOTH_LOCK_GLOW << 8)
     origGlowState.raw = DEFAULT_GLOW;
 
-  rgblight_config_t restoreState;
+  rgblight_config_t *restoreState;
 
-  if (prevTempGlowState.raw != 0 && fromTimer) // Restore to a lock light state if there was one
-    restoreState = prevTempGlowState;
-  else {                                       // If not, then restore to the original state
-    restoreState = origGlowState;
+  // Restore to a lock light state if there was one
+  if (prevTempGlowState.raw != 0 && fromTimer) {
+    restoreState = &prevTempGlowState;
+  } else {  // Otherwise, restore to the original state
+    restoreState = &origGlowState;
     isGlowTemp = false;
   }
 
-  rgblight_mode(restoreState.mode);
-  rgblight_sethsv(restoreState.hue, restoreState.sat, restoreState.val);
+  rgblight_mode(restoreState->mode);
+  rgblight_sethsv(restoreState->hue, restoreState->sat, restoreState->val);
 
-  if (restoreState.enable == 0)
+  if (restoreState->enable == 0)
     rgblight_disable();
 
   tempGlowDuration = 0;
@@ -274,7 +290,6 @@ static void restoreGlow(bool fromTimer) {
   prevTempGlowState.raw = 0;
 }
 
-// Set lock lights and numpad layer based on the active locks
 static void updateLocks(uint8_t usb_led) {
   rgblight_config_t newGlowState;
 
@@ -388,19 +403,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       break;
     case DZ_VERS:
-      SEND_STRING("Current Version: 1.06    "
-                  "Date: 1/17/19     "
-                  "Most Recent Change: Moved LGui to the center thumb key and shifted LCtrl and LAlt to the right.");
+      SEND_STRING("Current Version: 1.07\n"
+                  "Date: 6/05/19\n"
+                  "Most Recent Change: Swapped escape and tilde\n");
       break;
     case DZ_DBUG:
-      // send_string()
       break;
     case CURR_LR:
-      if (default_layer_state == L_QG + 1) {
-        indicateLayer();
-      } else if (default_layer_state == L_QW + 1) {
-        indicateLayer();
-      }
+      indicateLayer();
   }
 
   return true;
@@ -419,6 +429,5 @@ void led_set_user(uint8_t usb_led) {
 }
 
 void matrix_init_user(void) {
-  // Initialize all the preset underglows
   prevTempGlowState.raw = 0;
 }
