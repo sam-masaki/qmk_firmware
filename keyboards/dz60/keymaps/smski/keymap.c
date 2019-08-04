@@ -53,7 +53,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   /* Layer 1: QWERTY Layer
    * ,-----------------------------------------------------------.
-   * |   |   |   |   |   |   |   |   |   |   |   |   |   |   |Bsp|
+   * |Esc|   |   |   |   |   |   |   |   |   |   |   |   |   |Bsp|
    * |-----------------------------------------------------------|
    * |     |  Q|  W|  E|  R|  T|  Y|  U|  I|  O|  P|   |   |     |
    * |-----------------------------------------------------------|
@@ -67,7 +67,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_QW] = LAYOUT(
   /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
-      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BSPC,
+      KC_ESC,  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BSPC,
   /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       _______, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    _______, _______,          _______,
   /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
@@ -147,11 +147,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
       KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PGDN, KC_PGUP,
   /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
-      _______, KC_MPRV, KC_MPLY, KC_MNXT, ___X___, ___X___, ___X___, ___X___, KC_UP,   ___X___, ___X___, ___X___, ___X___,          ___X___,
+      _______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_UP,   ___X___, ___X___, KC_VOLD, KC_VOLU,          KC_MUTE,
   /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
-      _______, KC_VOLD, KC_MUTE, KC_VOLU, ___X___, ___X___, ___X___, KC_LEFT, KC_DOWN, KC_RGHT, ___X___, ___X___,                   ___X___,
+      _______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_LEFT, KC_DOWN, KC_RGHT, ___X___, ___X___,                   ___X___,
   /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
-      _______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          _______, ___X___,
+      _______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_MPRV, KC_MNXT, KC_MPLY,          _______, ___X___,
   /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
       _______, _______, _______, _______,          _______,                   _______,          _______, _CURMOD, ___E___, XXXXXXX, _______),
 
@@ -403,9 +403,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       break;
     case DZ_VERS:
-      SEND_STRING("Current Version: 1.07\n"
-                  "Date: 6/05/19\n"
-                  "Most Recent Change: Swapped escape and tilde\n");
+      SEND_STRING("Current Version: 1.08\n"
+                  "Date: 8/03/19\n"
+                  "Most Recent Change: Swapped tilde for esc on QWERTY\n");
       break;
     case DZ_DBUG:
       break;
