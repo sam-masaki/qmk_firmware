@@ -41,19 +41,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_QG] = LAYOUT(
   /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
-      KC_GRV, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_NLCK, KC_CAPS,
+      KC_ESC, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_NLCK, KC_CAPS,
   /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       KC_TAB,  KC_Q,    KC_G,    KC_M,    KC_L,    KC_W,    KC_Y,    KC_F,    KC_U,    KC_B,    KC_SCLN, KC_LBRC, KC_RBRC,          KC_BSLS,
   /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
-      KC_BSPC, KC_D,    KC_S,    KC_T,    KC_N,    KC_R,    KC_I,    KC_A,    KC_E,    KC_O,    KC_H,    KC_QUOT,                   KC_ENT,
+      KC_LCTL, KC_D,    KC_S,    KC_T,    KC_N,    KC_R,    KC_I,    KC_A,    KC_E,    KC_O,    KC_H,    KC_QUOT,                   KC_ENT,
   /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       KC_LSFT, ___E___, KC_Z,    KC_X,    KC_C,    KC_V,    KC_J,    KC_K,    KC_P,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSFT, DZ_CYCL,
   /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
-      KC_LCTL, KC_LGUI, KC_LALT, KC_SPC,           MO(L_TH),         KC_DEL,                    KC_RALT, MO(L_FN),___E___, MO(L_RG),KC_RCTL),
+      ___X___, KC_LGUI, KC_LALT, KC_SPC,           MO(L_TH),         KC_BSPC,                    KC_RALT, MO(L_FN),___E___, MO(L_RG),KC_RCTL),
 
   /* Layer 1: QWERTY Layer
    * ,-----------------------------------------------------------.
-   * |Esc|   |   |   |   |   |   |   |   |   |   |   |   |   |Bsp|
+   * |   |   |   |   |   |   |   |   |   |   |   |   |   |   |Bsp|
    * |-----------------------------------------------------------|
    * |     |  Q|  W|  E|  R|  T|  Y|  U|  I|  O|  P|   |   |     |
    * |-----------------------------------------------------------|
@@ -67,14 +67,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_QW] = LAYOUT(
   /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
-      KC_ESC,  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BSPC,
+      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BSPC,
   /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       _______, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    _______, _______,          _______,
-  /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
-      KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, _______,                   _______,
+  /*  Control  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
+      _______, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, _______,                   _______,
   /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       _______, ___E___, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    _______, _______, _______,          _______, _______,
-  /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
+  /*  Blank    Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
       _______, _______, _______, _______,          _______,          _______,                   _______, _______, ___E___, _______, _______),
 
   /* Layer 2: Numpad
@@ -101,7 +101,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       _______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_P0,   ___X___, KC_PDOT, ___X___,          _______, ___X___,
   /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
-      _______, _______, _______, _______,          ___X___,                   _______,          _______, ___X___, ___E___, ___X___, _______),
+      _______, _______, _______, _______,          ___X___,          _______,                   _______, ___X___, ___E___, ___X___, _______),
 
   /* Layer 3: Thumb-Function Layer
    * ,-----------------------------------------------------------.
@@ -127,11 +127,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       _______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          _______, ___X___,
   /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
-      _______, _______, _______, _______,          _CURMOD,                   _______,          _______, XXXXXXX, ___E___, XXXXXXX, _______),
+      _______, _______, _______, _______,          _CURMOD,          _______,                   _______, XXXXXXX, ___E___, XXXXXXX, _______),
 
   /* Layer 4: Multi-Hand Function Layer
    * ,-----------------------------------------------------------.
-   * | ~ | F1| F2| F3| F4| F5| F6| F7| F8| F9|F10|F11|F12|Pdn|Pup|
+   * |Esc| F1| F2| F3| F4| F5| F6| F7| F8| F9|F10|F11|F12|Pdn|Pup|
    * |-----------------------------------------------------------|
    * |     | <<| P | >>|   |   |   |   | ^ |   |   |   |   |     |
    * |-----------------------------------------------------------|
@@ -145,7 +145,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_FN] = LAYOUT(
   /*  Tilde    1        2        3        4        5        6        7        8        9        0        Minus    Equal    NumLock  ScrLck   */
-      KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PGDN, KC_PGUP,
+      KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PGDN, KC_PGUP,
   /*  Tab      Q        W        E        R        T        Y        U        I        O        P        LBrack   RBrack            Backslsh */
       _______, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_UP,   ___X___, ___X___, KC_VOLD, KC_VOLU,          KC_MUTE,
   /*  CapsLck  A        S        D        F        G        H        J        K        L        Semicln  Quote                      Enter    */
@@ -153,15 +153,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       _______, ___E___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, KC_MPRV, KC_MNXT, KC_MPLY,          _______, ___X___,
   /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
-      _______, _______, _______, _______,          _______,                   _______,          _______, _CURMOD, ___E___, XXXXXXX, _______),
+      _______, _______, _______, _______,          _______,          KC_DEL,                    _______, _CURMOD, ___E___, XXXXXXX, _______),
 
   /* Layer 5: RGB/Meta Keyboard Functions
    * ,-----------------------------------------------------------.
-   * |TOG|STA|BRT|RMD|SWR|SNK|KIT|XMS|GRD|TST|   |   |   |   |RST|
+   * |TOG|STA|BRT|RMD|SWR|SNK|KIT|XMS|GRD|TST|   |   |   |   |   |
    * |-----------------------------------------------------------|
    * |     |-HU|+HU|   |   |   |   |   |   |   |   |-MD|+MD|     |
    * |-----------------------------------------------------------|
-   * |      |-SA|+SA|   |   |   |   |   |   |   |   |   |   DEBUG|
+   * |      |-SA|+SA|   |   |   |   |   |RST|   |   |   |   DEBUG|
    * |-----------------------------------------------------------|
    * |        |-VA|+VA|   |   |   |   |   |   |   |   |      |   |
    * |-----------------------------------------------------------|
@@ -179,7 +179,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   /*  Shift             Z        X        C        V        B        N        M        Comma    Period   Slash             Shift    App      */
       DZ_VA_D, ___E___, RGB_VAD, RGB_VAI, DZ_VA_I, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___, ___X___,          ___X___, CURR_LR,
   /*  Control  Win      Alt      Space             Fn                Delete                     Alt      Fn                Menu     Control  */
-      DZ_VERS, ___X___, ___X___, ___X___,          _______,                   ___X___,          ___X___, XXXXXXX, ___E___, _CURMOD, ___X___),
+      DZ_VERS, ___X___, ___X___, ___X___,          _______,          ___X___,                   ___X___, XXXXXXX, ___E___, _CURMOD, ___X___),
 };
 
 // Sets the underglow into a temporary mode for duration milliseconds
@@ -209,7 +209,7 @@ rgblight_config_t prevTempGlowState;
 bool isGlowTemp = false;
 uint16_t tempGlowDuration = 0;
 uint16_t tempGlowStart = 0;
-rgblight_config_t rgblight_config;
+extern rgblight_config_t rgblight_config;
 
 static void setTempGlow(rgblight_config_t *tempState, uint16_t duration) {
   if (duration != 0) {                     // If this is a flash
@@ -231,7 +231,7 @@ static void setTempGlow(rgblight_config_t *tempState, uint16_t duration) {
   // If it's off, turn it on to a non-blinding brightness
   if (origGlowState.enable == 0) {
     rgblight_enable();
-    tempState->val = 70;
+    tempState->val = 200;
   }
 
   rgblight_mode(tempState->mode);
@@ -403,9 +403,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       break;
     case DZ_VERS:
-      SEND_STRING("Current Version: 1.08\n"
-                  "Date: 8/03/19\n"
-                  "Most Recent Change: Swapped tilde for esc on QWERTY\n");
+      SEND_STRING("Current Version: 1.09\n"
+                  "Date: 8/02/20\n"
+                  "Most Recent Change: Moved LCtrl to caps & moved backspace to right thumb\n");
       break;
     case DZ_DBUG:
       break;
