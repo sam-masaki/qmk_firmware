@@ -31,5 +31,6 @@ RGBLIGHT_ENABLE = no       # Enable WS2812 RGB underlight.
 SLEEP_LED_ENABLE = no    # Breathing sleep LED during USB suspend
 OLED_DRIVER_ENABLE = yes    # OLED display
 SPLIT_KEYBOARD = yes
+ENCODER_ENABLE = yes
 
 DEFAULT_FOLDER = lily58/rev1
