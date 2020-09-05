@@ -2,7 +2,7 @@
 #   change to "no" to disable the options, or define them in the Makefile in
 #   the appropriate keymap folder that will get included automatically
 #
-BOOTMAGIC_ENABLE = no       # Virtual DIP switch configuration
+BOOTMAGIC_ENABLE = yes       # Virtual DIP switch configuration
 MOUSEKEY_ENABLE = no        # Mouse keys
 EXTRAKEY_ENABLE = yes        # Audio control and System control
 CONSOLE_ENABLE = no         # Console for debug
@@ -27,5 +27,5 @@ SRC +=  ./lib/rgb_state_reader.c \
         ./lib/keylogger.c \
         ./lib/host_led_state_reader.c \
         ./lib/timelogger.c \
-	#./lib/mode_icon_reader.c
+	./lib/mode_icon_reader.c \
 	#./lib/logo_reader.c
