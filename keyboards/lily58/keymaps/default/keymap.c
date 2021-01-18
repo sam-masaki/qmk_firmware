@@ -15,6 +15,9 @@ char debug_string[6];
 char left_map[16];
 char right_map[16];
 
+char adj_map[11] = "s:WINM:Mac";
+bool is_adjust = false;
+
 #define _QGMLWY 0
 #define _QWERTY 1
 #define _LOWER 2
@@ -28,6 +31,8 @@ enum custom_keycodes {
   RAISE,
   ADJUST,
   LAYOUT,
+  VER_R,
+  VER_L,
 };
 
 
@@ -53,7 +58,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_TAB,   KC_Q,   KC_G,    KC_M,    KC_L,    KC_W,                     KC_Y,    KC_F,    KC_U,    KC_B,    KC_SCLN, KC_BSLS, \
       KC_LCTRL, KC_D,   KC_S,    KC_T,    KC_N,    KC_R,                     KC_I,    KC_A,    KC_E,    KC_O,    KC_H,    KC_QUOT, \
       KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_J, KC_MPLY,  KC_ENT,   KC_K,    KC_P,    KC_COMM, KC_DOT,  KC_SLSH,  KC_RSFT, \
-                        KC_LGUI, KC_LALT, KC_SPC,  LOWER,                    RAISE,   KC_BSPC, KC_RGUI, ADJUST \
+                        KC_LGUI, KC_LALT, KC_SPC,  LOWER,                    RAISE,   KC_BSPC, KC_DEL,  ADJUST \
                       ),
 
   /* QWERTY
@@ -97,7 +102,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, KC_LCBR, _______,                   _______, KC_RCBR, KC_UNDS, KC_PLUS, _______, KC_F12, \
       _______, _______, _______, _______, KC_LPRN, KC_LBRC,                   KC_RBRC, KC_RPRN, KC_MINS, KC_EQL,  _______, _______, \
       _______, _______, _______, _______, XXXXXXX, _______, _______, _______, _______, XXXXXXX, XXXXXXX, _______, _______, _______, \
-                        _______, _______, _______, _______,                   LAYOUT, _______, _______, _______\
+                        _______, _______, _______, _______,                   LAYOUT, _______, _______, XXXXXXX\
                      ),
   /* RAISE
    * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -119,7 +124,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, _______, _______,                     _______, _______, _______, _______, _______, _______, \
       KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                       XXXXXXX, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, XXXXXXX, \
       KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,   _______, _______,  KC_PLUS, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS, \
-                        _______, _______, _______,  LAYOUT, _______,  _______, _______, _______ \
+                        _______, _______, _______,  LAYOUT, _______,  _______, _______, XXXXXXX \
                      ),
   /* ADJUST
    * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -127,20 +132,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
    * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-   * |      |      |      |      |      |      |-------.    ,-------|      |      |RGB ON| HUE+ | SAT+ | VAL+ |
+   * |      |      |      |      |      |      |-------.    ,-------|      |      |      |      |      |      |
    * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
-   * |      |      |      |      |      |      |-------|    |-------|      |      | MODE | HUE- | SAT- | VAL- |
+   * |      |      |      |      |      |      |-------|    |-------|      |      |      |      |      |      |
    * `-----------------------------------------/       /     \      \-----------------------------------------'
    *                   |NotMac| Mac  |LOWER | /Space  /       \Enter \  |RAISE |      |Adjust|
    *                   | Swap | Swap |       /       /         \      \ |      |      |      |
    *                   `----------------------------'           '------''--------------------'
    */
   [_ADJUST] = LAYOUT( \
+      VER_L,   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, VER_R, \
       XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
       XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
-      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, \
-      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD,\
-                        LAG_NRM, LAG_SWP, _______, _______,                   _______,  _______, _______, _______ \
+      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+                        LAG_NRM, LAG_SWP, _______, XXXXXXX,                   XXXXXXX,  _______, _______, _______ \
                       )
 };
 
@@ -241,7 +246,7 @@ static void render_anim(void) {
         anim_sleep = timer_read32();
     } else {
         if(timer_elapsed32(anim_sleep) > OLED_TIMEOUT) {
-          //oled_off();
+          oled_off();
         } else {
             if(timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
                 anim_timer = timer_read32();
@@ -269,16 +274,22 @@ void oled_task_user(void) {
     oled_write_ln(read_layer_state(), false);
     //oled_write_ln(read_keylog(), false);
     //oled_write_ln(read_keylogs(), false);
-    oled_write_ln(read_mode_icon(keymap_config.swap_lalt_lgui), false);
+    if (keymap_config.swap_lalt_lgui)
+      oled_write_ln("Mac", false);
+    else
+      oled_write_ln("", false);
+    //oled_write_ln(read_mode_icon(keymap_config.swap_lalt_lgui), false);
     //oled_write_ln(read_host_led_state(), false);
     //oled_write_ln(read_timelog(), false);
     oled_write_ln(debug_string, false);
+    if (is_adjust)
+      oled_write_ln(adj_map, false);
     oled_write_ln(left_map, false);
     oled_write_ln("", false);
     oled_write_ln(right_map, false);
   } else {
      render_anim();
-     oled_set_cursor(0,6);
+     oled_set_cursor(0,5);
      sprintf(wpm_str, "WPM: %03d", get_current_wpm());
      oled_write_ln(wpm_str, false);
   }
@@ -336,12 +347,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case ADJUST:
       if (record->event.pressed) {
+        is_adjust = true;
         layer_on(_ADJUST);
       } else {
+        is_adjust = false;
         layer_off(_ADJUST);
       }
       return false;
       break;
+    case VER_R:
+    case VER_L:
+      if (record->event.pressed) {
+        SEND_STRING("2020/12/19, Recent: Added version & Delete key on right");
+      }
   }
   return true;
 }
