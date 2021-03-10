@@ -10,15 +10,8 @@
 #include "ssd1306.h"
 #endif
 
-extern uint8_t is_master;
-
 char wpm_str[10];
 char debug_string[6];
-char left_map[16];
-char right_map[16];
-
-char adj_map[11] = "s:WINM:Mac";
-bool is_adjust = false;
 
 #define _QGMLWY 0
 #define _QWERTY 1
@@ -66,7 +59,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_TAB,   KC_Q,   KC_G,    KC_M,    KC_L,    KC_W,                     KC_Y,    KC_F,    KC_U,    KC_B,    KC_SCLN, KC_BSLS, \
       KC_LCTRL, KC_D,   KC_S,    KC_T,    KC_N,    KC_R,                     KC_I,    KC_A,    KC_E,    KC_O,    KC_H,    KC_QUOT, \
       KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_J, KC_MPLY,  KC_ENT,   KC_K,    KC_P,    KC_COMM, KC_DOT,  KC_SLSH,  KC_RSFT, \
-                        KC_LGUI, KC_LALT, KC_SPC,  LOWER,                    RAISE,   KC_BSPC, KC_DEL,  ADJUST \
+      KC_LGUI, KC_LALT, KC_SPC,  LOWER,                    RAISE,   KC_BSPC, KC_DEL,  ADJUST \
                       ),
 
   /* QWERTY
@@ -89,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    _______, \
       _______, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, _______, \
       _______, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B, _______,  _______,  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______, \
-                        _______, _______, _______, _______,                  _______, _______, _______, _______ \
+      _______, _______, _______, _______,                  _______, _______, _______, _______ \
                       ),
   /* LOWER
    * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -110,7 +103,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, KC_LCBR, _______,                   _______, KC_RCBR, KC_UNDS, KC_PLUS, _______, KC_F12, \
       _______, _______, _______, _______, KC_LPRN, KC_LBRC,                   KC_RBRC, KC_RPRN, KC_MINS, KC_EQL,  _______, _______, \
       _______, _______, _______, _______, XXXXXXX, _______, _______, _______, _______, XXXXXXX, XXXXXXX, _______, _______, _______, \
-                        _______, _______, _______, _______,                   LAYOUT, _______, _______, XXXXXXX\
+      _______, _______, _______, _______,                   LAYOUT, _______, _______, XXXXXXX\
                      ),
   /* RAISE
    * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -132,7 +125,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, _______, _______,                     _______, _______, _______, _______, _______, _______, \
       KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                       XXXXXXX, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, XXXXXXX, \
       KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,   _______, _______,  KC_PLUS, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS, \
-                        _______, _______, _______,  LAYOUT, _______,  _______, _______, XXXXXXX \
+      _______, _______, _______,  LAYOUT, _______,  _______, _______, XXXXXXX \
                      ),
   /* ADJUST
    * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -153,7 +146,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
       XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
       XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
-                        LAG_NRM, LAG_SWP, _______, XXXXXXX,                   XXXXXXX,  _______, _______, _______ \
+      LAG_NRM, LAG_SWP, _______, XXXXXXX,                   XXXXXXX,  _______, _______, _______ \
                       )
 };
 
@@ -180,7 +173,6 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     return OLED_ROTATION_270;
   else
     return OLED_ROTATION_270;  // flips the display 180 degrees if offhand
-  //  return rotation;
 }
 
 
@@ -207,62 +199,62 @@ bool was_tapping = false;
 
 // Images credit j-inc(/James Incandenza) and pixelbenny. Credit to obosob for initial animation approach.
 static void render_anim(void) {
-    static const char PROGMEM idle[IDLE_FRAMES][ANIM_SIZE] = {
-        {0,192, 32, 32, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  1,  1,  2, 12, 16, 32, 64,128,  0,  0,  0,  0,  0,  0, 15,240,  0,  0,  0,  0,  0,192,192,192, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,140,140, 12,  0,  1,  2,  4, 24,224, 28, 19,  8,  8,  8,  8,  8, 16, 32, 32, 64, 64, 64, 66, 61,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  2,  2,  2,  2,  1,},
-        {0,  0,128, 64, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  2,  2,  2, 12, 16, 32, 64,128,  0,  0,  0,  0,  0,  0,  7,248,  0,  0,  0,  0,  0,192,192,192, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,140,140, 12,  0,  1,  2,  4, 24,224, 28, 19,  8,  8,  8,  8,  8, 16, 32, 32, 64, 64, 64, 66, 61,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  2,  2,  2,  2,  1,},
-        {0,  0,  0,128,128,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  4,  2,  2,  4,  8, 16, 32, 64,128,  0,  0,  0,  0,  0,  0,198, 57,  0,  0,  0,  0,  0,192,192,192, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,140,140, 12,  0,  1,  2,  4, 24,224, 30, 17,  8,  8,  8,  8,  8, 16, 32, 32, 64, 64, 64, 66, 61,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  2,  2,  2,  2,  1,},
-        {0,  0,  0,128,128,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  4,  2,  2,  4,  8, 16, 32, 64,128,  0,  0,  0,  0,  0,  0,198, 57,  0,  0,  0,  0,  0,192,192,192, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,140,140, 12,  0,  1,  2,  4, 24,224, 30, 17,  8,  8,  8,  8,  8, 16, 32, 32, 64, 64, 64, 66, 61,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  2,  2,  2,  2,  1,},
-        {0,128, 64, 64,128,  0,  0,128,128, 64, 64, 64, 32, 32, 16, 16, 16,  8,  4,  2,  2,  4, 24, 32, 64,128,  0,  0,  0,  0,  0,  0,  0, 31,224,  0,  0,  1,  1,  0,128,128,128, 48, 48,  0, 64, 64, 64, 32,160,176,134,134,128,152,152, 24,  1,  2,  4,  8, 16,224, 24, 30,  9,  8,  8,  8,  8, 16, 33, 33, 65, 64, 64, 66, 61,  1,  1,  1,  0,  0,  0,  0,  0,  0,  0,  1,  1,  2,  2,  2,  2,  1,}
-    };
-    static const char PROGMEM prep[][ANIM_SIZE] = {
-      {0,192, 32, 32, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  1,  1,  2, 12, 16, 32, 64,128, 64, 64, 64,128,  0,  0, 15,240,  0,  0,192, 32, 16, 16, 96,128, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,128,128,156,131,128, 64, 64, 48, 47, 28, 19,  8,  8,  8,  8,  8,  4,  4,  4,  3,  2,  2,  2,  1,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,}
-    };
-    static const char PROGMEM tap[TAP_FRAMES][TAP_SIZE] = {
-      {0,192, 32, 32, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  1,  1,  2, 12, 16, 32, 64,128, 64, 64, 64,128,  0,  0, 15,240,  0,  0,  0,  0,  0,  0,  0,  0, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,128,128,156,131,128, 64, 64, 48, 47, 28, 19,  8,  8,  8,  8,  8, 16, 32, 32, 64, 64, 64, 66, 61,  1, 97, 96,224,224,224,224,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  8, 12, 30, 63, 63, 63,  0,  0,  0,  0,  6, 30, 62, 60, 24,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,},
-        {0,192, 32, 32, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  1,  1,  2, 12, 16, 32, 64,128,  0,  0,  0,  0,  0,  0, 15,240,  0,  0,192, 32, 16, 16, 96,128, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,128,128,  0,  0,  1,  2,  4, 24,224, 28, 19,  8,  8,  8,  8,  8,  4,  4,  4,  3,  2,  2,  1,  1,  1,  1,  0,  0,  6, 14,142,204,236,236,225,225,  2,130,194,226,241,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  3,  3,  1,  0,  0,  7,  7, 15, 15,},
-    };
+  static const char PROGMEM idle[IDLE_FRAMES][ANIM_SIZE] = {
+    {0,192, 32, 32, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  1,  1,  2, 12, 16, 32, 64,128,  0,  0,  0,  0,  0,  0, 15,240,  0,  0,  0,  0,  0,192,192,192, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,140,140, 12,  0,  1,  2,  4, 24,224, 28, 19,  8,  8,  8,  8,  8, 16, 32, 32, 64, 64, 64, 66, 61,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  2,  2,  2,  2,  1,},
+    {0,  0,128, 64, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  2,  2,  2, 12, 16, 32, 64,128,  0,  0,  0,  0,  0,  0,  7,248,  0,  0,  0,  0,  0,192,192,192, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,140,140, 12,  0,  1,  2,  4, 24,224, 28, 19,  8,  8,  8,  8,  8, 16, 32, 32, 64, 64, 64, 66, 61,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  2,  2,  2,  2,  1,},
+    {0,  0,  0,128,128,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  4,  2,  2,  4,  8, 16, 32, 64,128,  0,  0,  0,  0,  0,  0,198, 57,  0,  0,  0,  0,  0,192,192,192, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,140,140, 12,  0,  1,  2,  4, 24,224, 30, 17,  8,  8,  8,  8,  8, 16, 32, 32, 64, 64, 64, 66, 61,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  2,  2,  2,  2,  1,},
+    {0,  0,  0,128,128,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  4,  2,  2,  4,  8, 16, 32, 64,128,  0,  0,  0,  0,  0,  0,198, 57,  0,  0,  0,  0,  0,192,192,192, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,140,140, 12,  0,  1,  2,  4, 24,224, 30, 17,  8,  8,  8,  8,  8, 16, 32, 32, 64, 64, 64, 66, 61,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  2,  2,  2,  2,  1,},
+    {0,128, 64, 64,128,  0,  0,128,128, 64, 64, 64, 32, 32, 16, 16, 16,  8,  4,  2,  2,  4, 24, 32, 64,128,  0,  0,  0,  0,  0,  0,  0, 31,224,  0,  0,  1,  1,  0,128,128,128, 48, 48,  0, 64, 64, 64, 32,160,176,134,134,128,152,152, 24,  1,  2,  4,  8, 16,224, 24, 30,  9,  8,  8,  8,  8, 16, 33, 33, 65, 64, 64, 66, 61,  1,  1,  1,  0,  0,  0,  0,  0,  0,  0,  1,  1,  2,  2,  2,  2,  1,}
+  };
+  static const char PROGMEM prep[][ANIM_SIZE] = {
+    {0,192, 32, 32, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  1,  1,  2, 12, 16, 32, 64,128, 64, 64, 64,128,  0,  0, 15,240,  0,  0,192, 32, 16, 16, 96,128, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,128,128,156,131,128, 64, 64, 48, 47, 28, 19,  8,  8,  8,  8,  8,  4,  4,  4,  3,  2,  2,  2,  1,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,}
+  };
+  static const char PROGMEM tap[TAP_FRAMES][TAP_SIZE] = {
+    {0,192, 32, 32, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  1,  1,  2, 12, 16, 32, 64,128, 64, 64, 64,128,  0,  0, 15,240,  0,  0,  0,  0,  0,  0,  0,  0, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,128,128,156,131,128, 64, 64, 48, 47, 28, 19,  8,  8,  8,  8,  8, 16, 32, 32, 64, 64, 64, 66, 61,  1, 97, 96,224,224,224,224,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  8, 12, 30, 63, 63, 63,  0,  0,  0,  0,  6, 30, 62, 60, 24,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,},
+    {0,192, 32, 32, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  1,  1,  2, 12, 16, 32, 64,128,  0,  0,  0,  0,  0,  0, 15,240,  0,  0,192, 32, 16, 16, 96,128, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,128,128,  0,  0,  1,  2,  4, 24,224, 28, 19,  8,  8,  8,  8,  8,  4,  4,  4,  3,  2,  2,  1,  1,  1,  1,  0,  0,  6, 14,142,204,236,236,225,225,  2,130,194,226,241,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  3,  3,  1,  0,  0,  7,  7, 15, 15,},
+  };
 
-    //assumes 1 frame prep stages
-    void animation_phase(void) {
-      if(get_current_wpm() <=IDLE_SPEED){
-        current_idle_frame = (current_idle_frame + 1) % IDLE_FRAMES;
-        oled_write_raw_P(idle[abs((IDLE_FRAMES-1)-current_idle_frame)], ANIM_SIZE);
-      }
-      if(get_current_wpm() >IDLE_SPEED && get_current_wpm() <TAP_SPEED){
-        // oled_write_raw_P(prep[abs((PREP_FRAMES-1)-current_prep_frame)], ANIM_SIZE); // uncomment if IDLE_FRAMES >1
-        oled_write_raw_P(prep[0], ANIM_SIZE);  // remove if IDLE_FRAMES >1
+  //assumes 1 frame prep stages
+  void animation_phase(void) {
+    if(get_current_wpm() <=IDLE_SPEED){
+      current_idle_frame = (current_idle_frame + 1) % IDLE_FRAMES;
+      oled_write_raw_P(idle[abs((IDLE_FRAMES-1)-current_idle_frame)], ANIM_SIZE);
+    }
+    if(get_current_wpm() >IDLE_SPEED && get_current_wpm() <TAP_SPEED){
+      // oled_write_raw_P(prep[abs((PREP_FRAMES-1)-current_prep_frame)], ANIM_SIZE); // uncomment if IDLE_FRAMES >1
+      oled_write_raw_P(prep[0], ANIM_SIZE);  // remove if IDLE_FRAMES >1
 
-        if (was_tapping) {
-          for (uint16_t i = ANIM_SIZE; i < TAP_SIZE; i++) {
-            oled_write_raw_byte(0, i);
-          }
-          was_tapping = false;
+      if (was_tapping) {
+        for (uint16_t i = ANIM_SIZE; i < TAP_SIZE; i++) {
+          oled_write_raw_byte(0, i);
         }
-      }
-      if(get_current_wpm() >=TAP_SPEED){
-        current_tap_frame = (current_tap_frame + 1) % TAP_FRAMES;
-        oled_write_raw_P(tap[abs((TAP_FRAMES-1)-current_tap_frame)], TAP_SIZE);
-        was_tapping = true;
+        was_tapping = false;
       }
     }
+    if(get_current_wpm() >=TAP_SPEED){
+      current_tap_frame = (current_tap_frame + 1) % TAP_FRAMES;
+      oled_write_raw_P(tap[abs((TAP_FRAMES-1)-current_tap_frame)], TAP_SIZE);
+      was_tapping = true;
+    }
+  }
 
-    if(get_current_wpm() != 000) {
-      //oled_on(); // not essential but turns on animation OLED with any alpha keypress
+  if(get_current_wpm() != 000) {
+    //oled_on(); // not essential but turns on animation OLED with any alpha keypress
+    if(timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
+      anim_timer = timer_read32();
+      animation_phase();
+    }
+    anim_sleep = timer_read32();
+  } else {
+    if(timer_elapsed32(anim_sleep) > OLED_TIMEOUT) {
+      oled_off();
+    } else {
       if(timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
         anim_timer = timer_read32();
         animation_phase();
       }
-        anim_sleep = timer_read32();
-    } else {
-        if(timer_elapsed32(anim_sleep) > OLED_TIMEOUT) {
-          oled_off();
-        } else {
-            if(timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
-                anim_timer = timer_read32();
-                animation_phase();
-            }
-        }
     }
+  }
 }
 
 // When you add source files to SRC in rules.mk, you can use functions.
@@ -285,15 +277,10 @@ void oled_task_user(void) {
     //oled_write_ln(read_keylogs(), false);
     if (keymap_config.swap_lalt_lgui)
       oled_write_ln("Mac", false);
-    else
-      oled_write_ln("", false);
     //oled_write_ln(read_mode_icon(keymap_config.swap_lalt_lgui), false);
     //oled_write_ln(read_host_led_state(), false);
     //oled_write_ln(read_timelog(), false);
     oled_write_ln(debug_string, false);
-
-    //    oled_write_ln("", false);
-    //    oled_write_ln(right_map, false);
 
     oled_set_cursor(0,13);
     switch (split_layerinfo) {
@@ -321,35 +308,33 @@ void oled_task_user(void) {
   } else {
     render_anim();
 
-     oled_set_cursor(0,5);
-     sprintf(wpm_str, "WPM: %03d", get_current_wpm());
-     oled_write_ln(wpm_str, false);
+    oled_set_cursor(0,5);
+    sprintf(wpm_str, "WPM: %03d", get_current_wpm());
+    oled_write_ln(wpm_str, false);
 
-     oled_write_ln("", false);
-
-     oled_set_cursor(0,13);
-     switch (split_layerinfo) {
-       case MAP_DEF:
-         oled_write("     "
-                    "     "
-                    "     ", false);
-         break;
-       case MAP_LOW:
-         oled_write(".}_+."
-                    "])-=."
-                    ".....", false);
-         break;
-       case MAP_RAI:
-         oled_write("....."
-                    ".<v^>"
-                    ".....", false);
-         break;
-       case MAP_ADJ:
-         oled_write("     "
-                    "     "
-                    "     ", false);
-         break;
-     }
+    oled_set_cursor(0,13);
+    switch (split_layerinfo) {
+      case MAP_DEF:
+        oled_write("     "
+                   "     "
+                   "     ", false);
+        break;
+      case MAP_LOW:
+        oled_write(".}_+."
+                   "])-=."
+                   ".....", false);
+        break;
+      case MAP_RAI:
+        oled_write("....."
+                   ".<v^>"
+                   ".....", false);
+        break;
+      case MAP_ADJ:
+        oled_write("     "
+                   "     "
+                   "     ", false);
+        break;
+    }
   }
 }
 #endif // OLED_DRIVER_ENABLE
@@ -357,8 +342,8 @@ void oled_task_user(void) {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
 #ifdef OLED_DRIVER_ENABLE
-    set_keylog(keycode, record);
-    set_timelog();
+    //set_keylog(keycode, record);
+    //set_timelog();
 #endif
   }
 
@@ -412,7 +397,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case VER_R:
     case VER_L:
       if (record->event.pressed) {
-        SEND_STRING("2021/03/10, Recent: Split communication w/ layer maps for each OLED.");
+        SEND_STRING("21/03/10, Display layer maps on right OLED");
       }
   }
   return true;
