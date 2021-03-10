@@ -5,6 +5,8 @@
 #include "matrix.h"
 #include "quantum.h"
 
+//#include "transport.h"
+
 #define ROWS_PER_HAND (MATRIX_ROWS / 2)
 
 #ifdef RGBLIGHT_ENABLE
@@ -20,6 +22,8 @@
 static pin_t encoders_pad[] = ENCODERS_PAD_A;
 #    define NUMBER_OF_ENCODERS (sizeof(encoders_pad) / sizeof(pin_t))
 #endif
+
+uint8_t split_layerinfo = 0;
 
 #if defined(USE_I2C)
 
@@ -145,6 +149,7 @@ typedef struct _Serial_m2s_buffer_t {
 #    ifdef WPM_ENABLE
     uint8_t current_wpm;
 #    endif
+    uint8_t split_layerinfo;
 } Serial_m2s_buffer_t;
 
 #    if defined(RGBLIGHT_ENABLE) && defined(RGBLIGHT_SPLIT)
@@ -251,6 +256,9 @@ bool transport_master(matrix_row_t matrix[]) {
     // Write wpm to slave
     serial_m2s_buffer.current_wpm = get_current_wpm();
 #    endif
+
+    serial_m2s_buffer.split_layerinfo = split_layerinfo;
+
     return true;
 }
 
@@ -271,6 +279,8 @@ void transport_slave(matrix_row_t matrix[]) {
 #    ifdef WPM_ENABLE
     set_current_wpm(serial_m2s_buffer.current_wpm);
 #    endif
+
+    split_layerinfo = serial_m2s_buffer.split_layerinfo;
 }
 
 #endif

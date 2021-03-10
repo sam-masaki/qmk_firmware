@@ -1,5 +1,7 @@
 #include QMK_KEYBOARD_H
 
+#include "transport.h"
+
 #ifdef PROTOCOL_LUFA
 #include "lufa.h"
 #include "split_util.h"
@@ -35,6 +37,12 @@ enum custom_keycodes {
   VER_L,
 };
 
+enum custom_maps {
+  MAP_DEF = 0,
+  MAP_LOW,
+  MAP_RAI,
+  MAP_ADJ,
+};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -48,8 +56,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |------+------+------+------+------+------|  Play |    | Enter |------+------+------+------+------+------|
    * |LShift|   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |   /  |RShift|
    * `-----------------------------------------/       /     \      \-----------------------------------------'
-   *                   | LGUI | LAlt | Space| /LOWER  /       \RAISE \  |BackSP| RGUI |ADJUST|
-   *                   |      |      |      |/       /         \      \ |      | ???  |      |
+   *                   | LGUI | LAlt | Space| /LOWER  /       \RAISE \  |BackSP| DEL  |ADJUST|
+   *                   |      |      |      |/       /         \      \ |      |      |      |
    *                   `----------------------------'           '------''--------------------'
    */
 
@@ -150,6 +158,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 void matrix_init_user(void) {
+
 }
 
 void encoder_update_user(uint8_t index, bool clockwise) {
@@ -213,7 +222,7 @@ static void render_anim(void) {
         {0,192, 32, 32, 64,128,128, 64, 64, 32, 32, 32, 16, 16,  8,  8,  8,  4,  2,  1,  1,  2, 12, 16, 32, 64,128,  0,  0,  0,  0,  0,  0, 15,240,  0,  0,192, 32, 16, 16, 96,128, 24, 24,  0, 32, 32, 32,144,144,152,131,131,128,128,128,  0,  0,  1,  2,  4, 24,224, 28, 19,  8,  8,  8,  8,  8,  4,  4,  4,  3,  2,  2,  1,  1,  1,  1,  0,  0,  6, 14,142,204,236,236,225,225,  2,130,194,226,241,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  3,  3,  1,  0,  0,  7,  7, 15, 15,},
     };
 
-    //assumes 1 frame prep stage
+    //assumes 1 frame prep stages
     void animation_phase(void) {
       if(get_current_wpm() <=IDLE_SPEED){
         current_idle_frame = (current_idle_frame + 1) % IDLE_FRAMES;
@@ -282,16 +291,65 @@ void oled_task_user(void) {
     //oled_write_ln(read_host_led_state(), false);
     //oled_write_ln(read_timelog(), false);
     oled_write_ln(debug_string, false);
-    if (is_adjust)
-      oled_write_ln(adj_map, false);
-    oled_write_ln(left_map, false);
-    oled_write_ln("", false);
-    oled_write_ln(right_map, false);
+
+    //    oled_write_ln("", false);
+    //    oled_write_ln(right_map, false);
+
+    oled_set_cursor(0,13);
+    switch (split_layerinfo) {
+      case MAP_DEF:
+        oled_write("     "
+                   "     "
+                   "     ", false);
+        break;
+      case MAP_LOW:
+        oled_write("...{."
+                   "...(["
+                   ".....", false);
+        break;
+      case MAP_RAI:
+        oled_write("....."
+                   "....."
+                   ".....", false);
+        break;
+      case MAP_ADJ:
+        oled_write("s:Win"
+                   "M:Mac"
+                   "     ", false);
+        break;
+    }
   } else {
-     render_anim();
+    render_anim();
+
      oled_set_cursor(0,5);
      sprintf(wpm_str, "WPM: %03d", get_current_wpm());
      oled_write_ln(wpm_str, false);
+
+     oled_write_ln("", false);
+
+     oled_set_cursor(0,13);
+     switch (split_layerinfo) {
+       case MAP_DEF:
+         oled_write("     "
+                    "     "
+                    "     ", false);
+         break;
+       case MAP_LOW:
+         oled_write(".}_+."
+                    "])-=."
+                    ".....", false);
+         break;
+       case MAP_RAI:
+         oled_write("....."
+                    ".<v^>"
+                    ".....", false);
+         break;
+       case MAP_ADJ:
+         oled_write("     "
+                    "     "
+                    "     ", false);
+         break;
+     }
   }
 }
 #endif // OLED_DRIVER_ENABLE
@@ -323,34 +381,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case LOWER:
       if (record->event.pressed) {
-        snprintf(left_map, sizeof(left_map), "...{....([.....");
-        snprintf(right_map, sizeof(right_map), ".}_+.])-=......");
+        split_layerinfo = MAP_LOW;
         layer_on(_LOWER);
       } else {
-        snprintf(left_map, sizeof(left_map), "               ");
-        snprintf(right_map, sizeof(right_map), "               ");
+        split_layerinfo = MAP_DEF;
         layer_off(_LOWER);
       }
       return false;
       break;
     case RAISE:
       if (record->event.pressed) {
-        snprintf(left_map, sizeof(left_map), "...............");
-        snprintf(right_map, sizeof(right_map), "......<v^>.....");
+        split_layerinfo = MAP_RAI;
         layer_on(_RAISE);
       } else {
-        snprintf(left_map, sizeof(left_map), "               ");
-        snprintf(right_map, sizeof(right_map), "               ");
+        split_layerinfo = MAP_DEF;
         layer_off(_RAISE);
       }
       return false;
       break;
     case ADJUST:
       if (record->event.pressed) {
-        is_adjust = true;
+        split_layerinfo = MAP_ADJ;
         layer_on(_ADJUST);
       } else {
-        is_adjust = false;
+        split_layerinfo = MAP_DEF;
         layer_off(_ADJUST);
       }
       return false;
@@ -358,7 +412,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case VER_R:
     case VER_L:
       if (record->event.pressed) {
-        SEND_STRING("2020/12/19, Recent: Added version & Delete key on right");
+        SEND_STRING("2021/03/10, Recent: Split communication w/ layer maps for each OLED.");
       }
   }
   return true;
