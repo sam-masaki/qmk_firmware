@@ -1,5 +1,4 @@
 #include QMK_KEYBOARD_H
-
 #include "transport.h"
 
 #ifdef PROTOCOL_LUFA
@@ -364,7 +363,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     //set_timelog();
 #endif
   }
-
   switch (keycode) {
     case QWERTY:
       if (record->event.pressed) {
@@ -418,5 +416,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         SEND_STRING("21/03/16, Display layer maps on right OLED");
       }
   }
+
   return true;
 }
