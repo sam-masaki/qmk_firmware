@@ -155,7 +155,6 @@ void matrix_init_user(void) {
 }
 
 void encoder_update_user(uint8_t index, bool clockwise) {
-  snprintf(debug_string, sizeof(debug_string), "none");
   if (index == 0) {
     if (clockwise) {
       tap_code(KC_VOLU);
@@ -285,14 +284,15 @@ const char *read_timelog(void);
 void oled_task_user(void) {
   if (is_keyboard_master()) {
     // If you want to change the display of OLED, you need to change here
-    oled_write_ln(read_layer_state(), false);
-    //oled_set_cursor(0,1);
+    oled_write(read_layer_state(), false);
     if (keymap_config.swap_lalt_lgui)
       oled_write_ln("Mac", false);
+    else
+      oled_write_ln("     ", false);
     //oled_write_ln(read_mode_icon(keymap_config.swap_lalt_lgui), false);
     //oled_write_ln(read_host_led_state(), false);
     //oled_write_ln(read_timelog(), false);
-    //    sprintf(debug_string, "%d", split_layerinfo);
+    //sprintf(debug_string, "%d", oled_brightness);
     oled_write_ln(debug_string, false);
 
     oled_set_cursor(0,13);
@@ -314,8 +314,7 @@ void oled_task_user(void) {
         break;
       case MAP_ADJ:
         oled_write("s:Win"
-                   "M:Mac"
-                   "     ", false);
+                   "M:Mac", false);
         break;
     }
   } else {
