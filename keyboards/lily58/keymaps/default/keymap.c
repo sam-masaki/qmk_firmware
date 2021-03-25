@@ -87,13 +87,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * ,-----------------------------------------.                    ,-----------------------------------------.
    * |      |  F1  |  F2  |  F3  |  F4  |  F5  |                    |  F6  |  F7  |  F8  |  F9  | F10  | F11  |
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-   * |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |                    |      |      |      |      |      | F12  |
+   * |      |      |      |      |   {  |      |                    |      |   }  |      |      |      | F12  |
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-   * |   `  |   !  |   @  |   #  |   (  |   {  |-------.    ,-------|   }  |   )  |   -  |      |      |      |
-   * |------+------+------+------+------+------|   [   |    |    ]  |------+------+------+------+------+------|
-   * |      |      |      |      |   [  |      |-------|    |-------|      |   ]  |   _  |      |      |      |
+   * |      |      |      |      |   (  |   [  |-------.    ,-------|   ]  |   )  |      |      |      |      |
+   * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
+   * |      |      |      |      |      |      |-------|    |-------|      |      |      |      |      |      |
    * `-----------------------------------------/       /     \      \-----------------------------------------'
-   *                   | LAlt | LGUI |LOWER | /Space  /       \Enter \  |RAISE |BackSP| RGUI |
+   *                   |      |      |      | / PRESS /       \LAYOUT\  |      |      |      |
    *                   |      |      |      |/       /         \      \ |      |      |      |
    *                   `----------------------------'           '------''--------------------'
    */
@@ -101,18 +101,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                     KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11, \
       _______, _______, _______, _______, KC_LCBR, _______,                   _______, KC_RCBR, KC_UNDS, KC_PLUS, _______, KC_F12, \
       _______, _______, _______, _______, KC_LPRN, KC_LBRC,                   KC_RBRC, KC_RPRN, KC_MINS, KC_EQL,  _______, _______, \
-      _______, _______, _______, _______, XXXXXXX, _______, _______, _______, _______, XXXXXXX, XXXXXXX, _______, _______, _______, \
+      _______, _______, _______, _______, _______, _______, _______, _______, _______, XXXXXXX, XXXXXXX, _______, _______, _______, \
                         _______, _______, _______, _______,                   LAYOUT, _______, _______, XXXXXXX\
                      ),
   /* RAISE
    * ,-----------------------------------------.                    ,-----------------------------------------.
    * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-   * |   `  |   1  |   2  |   3  |   4  |   5  |                    |   6  |   7  |   8  |   9  |   0  |      |
+   * |      |CapLk |NumLk |ScrLk |      |      |                    |      |      |      |      |      |      |
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-   * |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |-------.    ,-------|      | Left | Down |  Up  |Right |      |
-   * |------+------+------+------+------+------|   [   |    |    ]  |------+------+------+------+------+------|
-   * |  F7  |  F8  |  F9  | F10  | F11  | F12  |-------|    |-------|   +  |   -  |   =  |   [  |   ]  |   \  |
+   * |      |      |      |      |      |      |-------.    ,-------|      | Left | Down |  Up  |Right |      |
+   * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
+   * |      |      |      |      |      |      |-------|    |-------|      |      |      |      |      |      |
    * `-----------------------------------------/       /     \      \-----------------------------------------'
    *                   | LAlt | LGUI |LOWER | /Space  /       \Enter \  |RAISE |BackSP| RGUI |
    *                   |      |      |      |/       /         \      \ |      |      |      |
@@ -121,14 +121,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_RAISE] = LAYOUT( \
       _______, _______, _______, _______, _______, _______,                     _______, _______, _______, _______, _______, _______, \
-      _______, _______, _______, _______, _______, _______,                     _______, _______, _______, _______, _______, _______, \
-      KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                       XXXXXXX, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, XXXXXXX, \
-      KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,   _______, _______,  KC_PLUS, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS, \
-                        _______, _______, _______,  LAYOUT, _______,  _______, _______, XXXXXXX \
+      _______, KC_CAPS, KC_NLCK, KC_SLCK, _______, _______,                     _______, _______, _______, _______, _______, _______, \
+      _______, _______, _______, _______, _______, _______,                     _______, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, _______, \
+      _______, _______, _______, _______, _______, _______, _______,  _______,  _______, _______, _______, _______, _______, _______, \
+                        _______, _______, _______,  LAYOUT,                     _______, _______, _______, XXXXXXX \
                      ),
   /* ADJUST
    * ,-----------------------------------------.                    ,-----------------------------------------.
-   * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
+   * | Vers |      |      |      |      |      |                    |      |      |      |      |      | Vers |
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
    * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
@@ -234,88 +234,56 @@ static void render_anim(void) {
     }
   }
 
-  if(get_current_wpm() != 000) {
+  if(get_current_wpm() == 0) {
+    for (uint16_t i = 0; i < ANIM_SIZE; i++) {
+      oled_write_raw_byte(0, i);
+    }
+  } else {
     //oled_on(); // not essential but turns on animation OLED with any alpha keypress
     if(timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
       anim_timer = timer_read32();
       animation_phase();
-    }
-  } else {
-    // Erase the animation
-    for (uint16_t i = 0; i < ANIM_SIZE; i++) {
-      oled_write_raw_byte(0, i);
     }
   }
 }
 
 // When you add source files to SRC in rules.mk, you can use functions.
 const char *read_layer_state(void);
-void set_keylog(uint16_t keycode, keyrecord_t *record);
-const char *read_keylog(void);
-const char *read_keylogs(void);
-
-const char *read_mode_icon(bool swap);
 const char *read_host_led_state(void);
-void set_timelog(void);
-const char *read_timelog(void);
 
 /* OLED LAYOUT
- * -------   -------
- * |Carpx|   | Anim|
- * |     |   | Anim|
- * |     |   | Anim|
- * |     |   | Anim|
- * |     |   |WPM: |
- * |     |   |xxx  |
- * |     |   |     |
- * |     |   |     |
- * |     |   |     |
- * |     |   |     |
- * |     |   |     |
- * |     |   |     |
- * |     |   |     |
- * | MAP |   | MAP |
- * | MAP |   | MAP |
- * | MAP |   | MAP |
- * -------   -------
+ *    -------        -------
+ * 0  |Carpx|        | Anim|
+ * 1  |Mac  |        | Anim|
+ * 2  |N C S|        | Anim|
+ * 3  |     |        | Anim|
+ * 4  |     |        |WPM: |
+ * 5  |     |        |xxx  |
+ * 6  |     |        |     |
+ * 7  |     |        |     |
+ * 8  |     |        |     |
+ * 9  |     |        |     |
+ * 10 |     |        |     |
+ * 11 |     |        |     |
+ * 12 |     |        |     |
+ * 13 | MAP |        | MAP |
+ * 14 | MAP |        | MAP |
+ * 15 | MAP |        | MAP |
+ *    -------        -------
  */
 
 void oled_task_user(void) {
-  if (is_keyboard_master()) {
-    // If you want to change the display of OLED, you need to change here
+  bool lefthalf = is_keyboard_master();
+
+  if (lefthalf) {
     oled_write(read_layer_state(), false);
+
     if (keymap_config.swap_lalt_lgui)
       oled_write_ln("Mac", false);
     else
       oled_write_ln("     ", false);
-    //oled_write_ln(read_mode_icon(keymap_config.swap_lalt_lgui), false);
-    //oled_write_ln(read_host_led_state(), false);
-    //oled_write_ln(read_timelog(), false);
-    //sprintf(debug_string, "%d", oled_brightness);
-    oled_write_ln(debug_string, false);
 
-    oled_set_cursor(0,13);
-    switch (split_layerinfo) {
-      case MAP_DEF:
-        oled_write("     "
-                   "     "
-                   "     ", false);
-        break;
-      case MAP_LOW:
-        oled_write("...{."
-                   "...(["
-                   ".....", false);
-        break;
-      case MAP_RAI:
-        oled_write("....."
-                   "....."
-                   ".....", false);
-        break;
-      case MAP_ADJ:
-        oled_write("s:Win"
-                   "M:Mac", false);
-        break;
-    }
+    oled_write_ln(read_host_led_state(), false);
   } else {
     render_anim();
 
@@ -328,30 +296,40 @@ void oled_task_user(void) {
       oled_write_ln("     "
                     "     ", false);
     }
+  }
 
-    oled_set_cursor(0,13);
-    switch (split_layerinfo) {
-      case MAP_DEF:
-        oled_write("     "
-                   "     "
-                   "     ", false);
-        break;
-      case MAP_LOW:
+  oled_set_cursor(0,13);
+  switch (split_layerinfo) {
+    case MAP_DEF:
+      oled_write("     "
+                 "     "
+                 "     ", false);
+      break;
+    case MAP_LOW:
+      if (lefthalf)
+        oled_write("...{."
+                   "...(["
+                   ".....", false);
+      else
         oled_write(".}_+."
                    "])-=."
                    ".....", false);
-        break;
-      case MAP_RAI:
+      break;
+    case MAP_RAI:
+      if (lefthalf)
+        oled_write("\xDD\xDE\xDF.."
+                   "....."
+                   ".....", false);
+      else
         oled_write("....."
                    ".<v^>"
                    ".....", false);
-        break;
-      case MAP_ADJ:
-        oled_write("     "
-                   "     "
-                   "     ", false);
-        break;
-    }
+      break;
+    case MAP_ADJ:
+      if (lefthalf)
+        oled_write("s:Win"
+                   "M:Mac", false);
+      break;
   }
 }
 #endif // OLED_DRIVER_ENABLE
@@ -413,7 +391,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case VER_R:
     case VER_L:
       if (record->event.pressed) {
-        SEND_STRING("21/03/16, Display layer maps on right OLED");
+        SEND_STRING("24/03/16, Added lock keys and indicators");
       }
   }
 
